@@ -39,9 +39,13 @@ export default function Bar(){
   const note=useSelector((state)=>state.note);
   
   const [user,setUser] = useState(JSON.parse(localStorage.getItem('profile')));//TO GET THE USER FROM LOCAL STORAGE AND SET IT TO "USER"
+  
 
   //IF THE USER IS LOGGED IN FROM BEFORE, THEN AN ACTION IS DISPATCHED TO UPDATE THE VALUE OF AUTH IN STORE
   if(user!=null){
+    if(user.exp<new Date().getTime()){
+      const ans=logout;
+    }
     dispatch(changeUser(user));
   }
 
@@ -51,10 +55,13 @@ export default function Bar(){
 
 
   const loginSuccess = (res)=>{
+    console.log(res)
     const result = res?.profileObj;
     const token = res?.tokenId;
+    const exp=res?.tokenObj.expires_at;
+    console.log(exp);
     try {
-      dispatch({type:"AUTH",data:{result,token}});
+      dispatch({type:"AUTH",data:{result,token,exp}});
       } catch (error) {
       console.log(error);
       }

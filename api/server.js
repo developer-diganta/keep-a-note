@@ -3,6 +3,7 @@ const express=require("express");
 const bodyParser=require("body-parser");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const md5=require("md5");
 const app=express();
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
@@ -34,11 +35,10 @@ app.post("/api/getNotes",async function(req,res){
         audience: process.env.GOOGLE_CLIENTID
     });
 
-    const { name, email, picture } = ticket.getPayload(); 
+    const email= md5(ticket.getPayload().email); 
     Note.find({email:email},function(err,found){
         
         if(!err){
-            console.log(found);
             res.json(found);
         }
         else{
@@ -60,7 +60,8 @@ app.post("/api/addNotes",async function(req,res){
         audience: process.env.GOOGLE_CLIENTID
     });
 
-    const { name, email, picture } = ticket.getPayload();    
+    const email= md5(ticket.getPayload().email); 
+ 
 
     const note = {
         name:req.body.data.name,
@@ -105,7 +106,8 @@ app.post("/api/deleteNotes",async function(req,res){
         audience: process.env.GOOGLE_CLIENTID
     });
 
-    const { name, email, picture } = ticket.getPayload();  
+    const email= md5(ticket.getPayload().email); 
+  
 
     const a = await Note.findOne({email:email},async function(err,data){
         let notes=data.notes;
@@ -130,7 +132,8 @@ app.post("/api/editNotes", async function(req,res){
         audience: process.env.GOOGLE_CLIENTID
     });
 
-    const { name, email, picture } = ticket.getPayload();  
+    const email= md5(ticket.getPayload().email); 
+
 
     const a = await Note.findOne({email:email},async function(err,doc){
         let notes=doc.notes;
